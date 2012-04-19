@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class State {
 
 	// Whether this state accepts a word
-	private final boolean _accepting;
+	private boolean _accepting;
 	
 	// State identification number
 	private final Automaton _automaton;
@@ -20,10 +20,10 @@ public class State {
 	 * Constructs a state class.
 	 * 
 	 */
-	public State(Automaton automaton, boolean accepting)
+	public State(Automaton automaton)
 	{
 		// Set fields
-		_accepting = accepting;
+		_accepting = false;
 		_automaton = automaton;
 		
 		// Create state map
@@ -57,4 +57,32 @@ public class State {
 	{
 		return _automaton.getStateId(this);
 	}
+	
+	/**
+	 * Returns whether this state is accepting words.
+	 * 
+	 */
+	public boolean getAccepting()
+	{
+		return _accepting;
+	}
+	
+	/**
+	 * Sets whether this automaton accepts words.
+	 * 
+	 */
+	public void setAccepting()
+	{
+		setAccepting(true);
+	}
+	
+	/**
+	 * Sets whether this automaton accepts words.
+	 * 
+	 */
+	public void setAccepting(boolean value)
+	{
+		_accepting = value;
+	}
+	
 }
