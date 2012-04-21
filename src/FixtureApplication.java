@@ -29,11 +29,15 @@ public class FixtureApplication {
 		
 		State q1 = automaton.createState();
 		State q2 = automaton.createState();
-		q2.setAccepting();
+		State q3 = automaton.createState();
+		q3.setAccepting();
 		
-		q1.connect(q1, 'c');
+		q1.connect(q1, 'a');
 		q1.connect(q2, 'a');
-		q2.connect(q1, 'b');
+		q2.connect(q2, 'b');
+		q2.connect(q3, 'a');
+		q3.connect(q2, 'b');
+		q3.connect(q1, 'a');
 		
 		return automaton;
 	}
