@@ -1,9 +1,12 @@
+import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Class of an automaton state.
- * @author Konstantin Möllers
+ * @author Konstantin Mï¿½llers
  */
 public class State {
 
@@ -85,4 +88,28 @@ public class State {
 		_accepting = value;
 	}
 	
+	/**
+	 * 
+	 * @param state
+	 * @return
+	 */
+	public Set<Character> getSignsTo(State target)
+	{
+		Set<Character> characters = new HashSet<Character>();
+		
+		if(target == this)
+		{
+			characters.add('!');
+		}
+		
+		for(Entry<Character, State> entry : _neighbours.entrySet())
+		{
+			if(entry.getValue() == target)
+			{
+				characters.add(entry.getKey());
+			}
+		}
+		
+		return characters;
+	}
 }

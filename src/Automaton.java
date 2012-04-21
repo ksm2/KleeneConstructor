@@ -66,4 +66,15 @@ public class Automaton {
 	{
 		return _states;
 	}
+	
+	/**
+	 * retun a state
+	 * 
+	 * @return
+	 */
+	public State getStateById(int id)
+	{
+		return _states.get(id);
+	}
+	
 }

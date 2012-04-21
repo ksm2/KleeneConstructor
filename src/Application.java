@@ -22,7 +22,7 @@ public class Application {
 		int stateCount; 
 		
 		System.out.println("KLEENE CONSTRUCTOR");
-		System.out.println("Written by Konstantin Möllers, Markus Fasselt\n");
+		System.out.println("Written by Konstantin Mï¿½llers, Markus Fasselt\n");
 		
 		stateCount = getStateCount();
 		
