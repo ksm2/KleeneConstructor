@@ -2,7 +2,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-
+/**
+ * RegEx Algorithm Class
+ * @author Markus Fasselt
+ *
+ */
 public class Kleene {
 	
 	private Automaton _automaton;
@@ -75,7 +79,7 @@ public class Kleene {
 			String part3 = getRegEx(k-1, k - 1, k - 1);
 			String part4 = getRegEx(k-1, k -1, j);
 			
-			result = "(" + part1 + ") + (" + part2 + ")" + "(" + part3 + ")*" + "(" + part4 + ")";
+			result = "(" + part1 + ")>(" + part2 + ")" + "(" + part3 + ")*" + "(" + part4 + ")";
 		}
 		
 		_calculated[k][i][j] = result;
@@ -85,7 +89,7 @@ public class Kleene {
 	}
 	
 	/**
-	 * put all objects in the set into a concatinated string
+	 * Puts all objects in a set into a concatinated string.
 	 * 
 	 * @param connectors
 	 * @return
@@ -102,7 +106,7 @@ public class Kleene {
 			size--;
 			if(size > 0)
 			{
-				result.append(" + ");
+				result.append(">");
 			}
 		}
 		

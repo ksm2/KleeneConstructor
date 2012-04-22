@@ -17,7 +17,11 @@ public class FixtureApplication {
 	{
 		Automaton automaton = createFixtures();
 		Kleene kleene = new Kleene(automaton);
-		System.out.println(kleene.buildRegEx());
+		String regEx = kleene.buildRegEx();
+		System.out.println("Davor:          " + regEx);
+		regEx = Minimizer.getInstance().miniMe(regEx);
+		
+		System.out.println("Habe optimiert: " + regEx);
 	}
 	
 	/**
