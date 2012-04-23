@@ -17,8 +17,9 @@ public class FixtureApplication {
 	{
 		Automaton automaton = createFixtures();
 		Kleene kleene = new Kleene(automaton);
-		//String regEx = kleene.buildRegEx();
-		String regEx = "a>!aa";
+//		String regEx = kleene.buildRegEx();
+		String regEx = "a>!a(a(a(b)))";
+		System.out.println("Erwartet:       a+a(a(ab))");
 		System.out.println("Davor:          " + regEx);
 		regEx = Minimizer.getInstance().miniMe(regEx);
 		

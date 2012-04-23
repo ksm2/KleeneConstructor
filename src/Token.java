@@ -83,97 +83,128 @@ class Token
 			for(Token token: _items)
 				token.optimize();
 		
-			int index = 0;
-			while (index < _items.size() - 1)
-			{
-				Token item = _items.get(index);
-				Token next = _items.get(index + 1);
-				if (itemIsUnitedWithNext(item))
-				{
-					Token unitedWith = _items.get(index + 2);
-					// Epsilon-Optimize
-					if (unitedWith.isEpsilon() && (item.type == Token.TYPE_PLUS))
-					{
-						_items.remove(index + 1);
-						_items.remove(index + 1);
-						item.type = Token.TYPE_STAR;
-						--index;		
-					}
-					else if (item.isEpsilon() && (unitedWith.type == Token.TYPE_PLUS))
-					{
-						_items.remove(index);
-						_items.remove(index);
-						unitedWith.type = Token.TYPE_STAR;
-						--index;		
-					}
-					else if (item.itemsEqual(unitedWith))
-					{
-						_items.remove(index);
-						_items.remove(index);
-						--index;
-					}
-				}
-				else // Concatenated with next
-				{
-					if (item.isEpsilon())
-					{
-						_items.remove(index);
-						--index;
-					}
-					else if (item.type == Token.TYPE_NOTHING)
-					{
-						if (item.itemsEqual(next) && (next.type == Token.TYPE_STAR))
-						{
-							_items.remove(index);
-							next.type = Token.TYPE_PLUS;
-							--index;
-						}
-					}
-					else if (item.type == Token.TYPE_STAR)
-					{
-						if (item.itemsEqual(next))
-						{
-							_items.remove(index + 1);
-							item.type = Token.TYPE_PLUS;
-							--index;
-						}
-					}
-				}
-				++index;
-			} /* of while */
+			optimizeConcatenated();			
+			optimizeUnited();
 			
-			// Last element?
-			// Finally remove last epsilon
-			if ((_items.size() > 1) && (_items.get(index).isEpsilon()))
+			combine();
+			simplifyValueTokens();
+			
+		}
+	}
+	
+	private void optimizeConcatenated()
+	{
+		int index = 0;
+		while (index < _items.size() - 1)
+		{
+			Token item = _items.get(index);
+			Token next = _items.get(index + 1);
+			
+			if (!itemIsUnitedWithNext(item))
 			{
-				if (_items.get(index - 1).value != '>')
-					_items.remove(index);
-			}
-			switch (_items.size())
-			{
-			case 1:
-				value = _items.get(0).value;
-				type = _items.get(0).type;
-				_items.remove(0);
-				break;
-			case 3:
-				if (_items.get(1).value == '>')
+				if (item.isEpsilon())
 				{
-					if (_items.get(0).isEpsilon())
+					_items.remove(index);
+					--index;
+				}
+				else if (item.type == Token.TYPE_NOTHING)
+				{
+					if (item.itemsEqual(next) && (next.type == Token.TYPE_STAR))
 					{
-						value = _items.get(2).value;
-						_items.clear();
-					}
-					else if (_items.get(2).isEpsilon())
-					{
-						value = _items.get(0).value;
-						_items.clear();
+						_items.remove(index);
+						next.type = Token.TYPE_PLUS;
+						--index;
 					}
 				}
-				break;
+				else if (item.type == Token.TYPE_STAR)
+				{
+					if (item.itemsEqual(next))
+					{
+						_items.remove(index + 1);
+						item.type = Token.TYPE_PLUS;
+						--index;
+					}
+				}
 			}
-		} /* of if not hasValue */
+			++index;
+		} /* of while */
+	}
+	
+	private void optimizeUnited()
+	{
+		int index = 0;
+		while (index < _items.size() - 1)
+		{
+			Token item = _items.get(index);
+			Token next = _items.get(index + 1);
+			if (itemIsUnitedWithNext(item))
+			{
+				Token unitedWith = _items.get(index + 2);
+				// Epsilon-Optimize
+				if (unitedWith.isEpsilon() && (item.type == Token.TYPE_PLUS))
+				{
+					_items.remove(index + 1);
+					_items.remove(index + 1);
+					item.type = Token.TYPE_STAR;
+					--index;		
+				}
+				else if (item.isEpsilon() && (unitedWith.type == Token.TYPE_PLUS))
+				{
+					_items.remove(index);
+					_items.remove(index);
+					unitedWith.type = Token.TYPE_STAR;
+					--index;		
+				}
+				else if (item.itemsEqual(unitedWith))
+				{
+					_items.remove(index);
+					_items.remove(index);
+					--index;
+				}
+			}
+			
+			++index;
+		} /* of while */
+	}
+	
+	private void combine()
+	{
+		int index = _items.size() - 1;
 		
+		// Last element?
+		// Finally remove last epsilon
+		if ((_items.size() > 1) && (_items.get(index).isEpsilon()))
+		{
+			if (_items.get(index - 1).value != '>')
+				_items.remove(index);
+		}
+		switch (_items.size())
+		{
+		case 1:
+			value = _items.get(0).value;
+			type = _items.get(0).type;
+			_items.remove(0);
+			break;
+		case 3:
+			if (_items.get(1).value == '>')
+			{
+				if (_items.get(0).isEpsilon())
+				{
+					value = _items.get(2).value;
+					_items.clear();
+				}
+				else if (_items.get(2).isEpsilon())
+				{
+					value = _items.get(0).value;
+					_items.clear();
+				}
+			}
+			break;
+		}
+	}
+	
+	private void simplifyValueTokens()
+	{
 		// Single optimization
 		if (hasValue())
 		{
@@ -181,7 +212,7 @@ class Token
 				type = Token.TYPE_NOTHING;
 		}
 	}
-
+	
 	/**
 	 * Builds its own token list.
 	 * 
