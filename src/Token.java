@@ -41,18 +41,25 @@ class Token
 	
 	public String toString()
 	{
+		return _toString(true);
+	}
+	
+	private String _toString(boolean first)
+	{
 		StringBuffer str = new StringBuffer();
 		if (!hasValue())
 		{
-			str.append("(");
+			if (!first)
+				str.append("(");
 			for(Token token: _items)
-				str.append(token.toString());				
-			str.append(")");
+				str.append(token._toString(false));				
+			if (!first)
+				str.append(")");
 		}
 		else
 		{
 			if (value == '!')
-				str.append("\\epsilon{}");
+				str.append("!");
 			else if (value == '>')
 				str.append("+");
 			else
@@ -99,7 +106,7 @@ class Token
 						unitedWith.type = Token.TYPE_STAR;
 						--index;		
 					}
-					else if (item.isEpsilon() && unitedWith.isEpsilon())
+					else if (item.itemsEqual(unitedWith))
 					{
 						_items.remove(index);
 						_items.remove(index);
@@ -131,21 +138,42 @@ class Token
 							--index;
 						}
 					}
-					else if ((index == _items.size() - 2) && next.isEpsilon())
-					{
-						_items.remove(index + 1);
-						--index;
-					}
 				}
 				++index;
-			}
+			} /* of while */
+			
 			// Last element?
-			if (_items.size() == 1)
+			// Finally remove last epsilon
+			if ((_items.size() > 1) && (_items.get(index).isEpsilon()))
 			{
-				value = _items.get(0).value;
-				_items.remove(0);
+				if (_items.get(index - 1).value != '>')
+					_items.remove(index);
 			}
-		}
+			switch (_items.size())
+			{
+			case 1:
+				value = _items.get(0).value;
+				type = _items.get(0).type;
+				_items.remove(0);
+				break;
+			case 3:
+				if (_items.get(1).value == '>')
+				{
+					if (_items.get(0).isEpsilon())
+					{
+						value = _items.get(2).value;
+						_items.clear();
+					}
+					else if (_items.get(2).isEpsilon())
+					{
+						value = _items.get(0).value;
+						_items.clear();
+					}
+				}
+				break;
+			}
+		} /* of if not hasValue */
+		
 		// Single optimization
 		if (hasValue())
 		{
